@@ -26,6 +26,23 @@ app.get('/api/products/:id', (req, res) => {
   return res.status(200).json(singleProduct);
 });
 
-app.listen(3001, () => {
+app.get('/api/v1/query', (req, res) => {
+  const { search, limit } = req.query; // Getting search and limit queries
+  let sortedProducts = [...products]; // Copying the products obj
+
+  if (search) {
+    sortedProducts = sortedProducts.filter(product => {
+      return product.name.startsWith(search); // Return the product that starts with the search query value
+    });
+  } else if (limit) {
+    sortedProducts = sortedProducts.slice(0, Number(limit)); // Filtered search of products, from the first to the limit number
+  }
+  if (sortedProducts.length < 1) {
+    return res.status(200).json({ success: true, data: [] }); // Product not found but successful request
+  }
+  res.status(200).json(sortedProducts);
+});
+
+app.listen(5000, () => {
   console.log('hey from the server');
 });
