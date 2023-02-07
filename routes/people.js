@@ -1,69 +1,25 @@
 const express = require('express');
 const router = express.Router();
-let { people } = require('../data');
+const {
+  getPeople,
+  createPerson,
+  createPersonInsomnia,
+  updatePerson,
+  deletePerson,
+} = require('../controllers/people');
 
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: people });
-});
+router.get('/', getPeople);
 
-// Add new person
-// This will be /api/people by using app.use in our app.js
-router.post('/', (req, res) => {
-  const { name } = req.body;
-  if (!name) {
-    return res
-      .status(400)
-      .json({ success: false, msg: 'Please provide name value' });
-  }
-  res.status(201).json({ success: true, person: name });
-});
+// Add new person. This will be /api/people
+router.post('/', createPerson);
 
-// This will be /api/people/insomnia by using app.use in our app.js
-router.post('/insomnia', (req, res) => {
-  const { name } = req.body;
-  if (!name) {
-    return res
-      .status(400)
-      .json({ success: false, msg: 'Please provide name value' });
-  }
-  res.status(201).json({ success: true, data: [...people, name] });
-});
+// Add new person with insomnia. This will be /api/people/insomnia
+router.post('/insomnia', createPersonInsomnia);
 
 // Update person name by id
-
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-
-  const person = people.find(person => person.id === Number(id));
-  if (!person) {
-    return res
-      .status(404)
-      .json({ success: false, msg: `No person with id ${id}` });
-  }
-  const newPeople = people.map(person => {
-    // If id of person matches the one in the param
-    if (person.id === Number(id)) {
-      person.name = name; // Change the name
-    }
-    return person;
-  });
-  res.status(200).json({ success: true, data: newPeople });
-});
+router.put('/:id', updatePerson);
 
 // Remove person by id
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-
-  const person = people.find(person => person.id === Number(id));
-  if (!person) {
-    return res
-      .status(404)
-      .json({ success: false, msg: `No person with id ${id}` });
-  }
-
-  const newPeople = people.filter(person => person.id !== Number(id));
-  return res.status(200).json({ success: true, data: newPeople });
-});
+router.delete('/:id', deletePerson);
 
 module.exports = router;
